@@ -1,3 +1,6 @@
+#include<string>
+#include<iostream>
+
 namespace formt { // to format output
 
     auto find_braces(std::string s_p) 
