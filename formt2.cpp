@@ -11,6 +11,7 @@ bool global_bool = false;
 int __i_ = 0;
 std::vector<int> i{};
 bool b = false;
+bool get_has_been_called = false;
 
 constexpr auto return_char_int(char& i)
 {
@@ -125,7 +126,15 @@ void func(std::string s, T t) {
     // }
     auto substr_v = s.substr(0, i.second);
     std::cout << substr_v << i.first;
-    auto substr_v2 = s.substr(i.second + 3, (s.size() - i.second));
+    std::string substr_v2 = "";
+    if(get_has_been_called)
+    {
+    substr_v2 = s.substr(i.second + 4, (s.size() - i.second));
+    }
+    else
+    {
+        substr_v2 = s.substr(i.second + 3, (s.size() - i.second)); // could be i.second + 2
+    }
     std::cout << substr_v2;
 }
 int j = 0;
@@ -146,13 +155,21 @@ void func(std::string s, T t, Ts... ts)
     } else {
         throw std::runtime_error("Entered variables but no /'{}/'.");
     }
-    auto w = s.substr(x.second + 3, s.size());
+    std::string w = "";
+    if(get_has_been_called)
+    {
+    w = s.substr(x.second + 4, s.size());
+    }
+    else
+    {
+        w = s.substr(x.second + 3, s.size());
+    }
     func(w, ts...);
 }
 } // formt
 
 int main()
 {
-    formt::func("{}\n\n", 42);
-    formt::func("Hello There {1} my freinds called {0}", "Sue", "Phil");
+    formt::func("{}\n", 42);
+    formt::func("\nHello There {1} my freinds called {0}", "Sue", "Phil");
 }
