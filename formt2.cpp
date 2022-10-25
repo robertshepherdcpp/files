@@ -136,6 +136,7 @@ void func(std::string s, T t) {
         substr_v2 = s.substr(i.second + 3, (s.size() - i.second)); // could be i.second + 2
     }
     std::cout << substr_v2;
+    get_has_been_called = false;
 }
 int j = 0;
 int c = 0;
