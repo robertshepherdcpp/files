@@ -25,7 +25,7 @@ template<typename T>
 void func(std::string s, T t) {
     int i = find_braces(s);
     if(i == -1) {
-        throw std::runtime_error("Entered variables but no /'{}/'."); }
+        // throw std::runtime_error("Entered variables but no /'{}/'."); }
     auto substr_v = s.substr(0, i);
     std::cout << substr_v << t;
     auto substr_v2 = s.substr(i + 2, (s.size() - i));
