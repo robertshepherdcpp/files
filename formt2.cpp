@@ -75,7 +75,7 @@ auto get(auto t, auto... ts)
     }
 }
 
-namespace formt { // to format output
+namespace formttwo { // to format output
     struct Num
     {
     };
@@ -181,6 +181,6 @@ auto func(Self& self)
 
 int function()
 {
-    formt::func("{}\n", 4242);
-    formt::func("Hello There {1} my freinds called {0}", "Sue", "Phil");
+    formttwo::func("{}\n", 4242);
+    formttwo::func("Hello There {1} my freinds called {0}", "Sue", "Phil");
 }
