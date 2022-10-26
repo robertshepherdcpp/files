@@ -179,7 +179,7 @@ auto func(Self& self)
 
 }
 
-int main()
+int main_2()
 {
     formt::func("{}\n", 4242);
     formt::func("Hello There {1} my freinds called {0}", "Sue", "Phil");
