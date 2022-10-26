@@ -1,5 +1,6 @@
 #include<vector> // std::vector
 #include<source_location> // std::source_location
+#include<iostream> // std::cout
 
 struct Network;
 
@@ -101,6 +102,7 @@ int main_2()
 
 int main()
 {
+    std::cout << "Welcome To the Socket API!" << "\n";
     main_2();
 }
 
