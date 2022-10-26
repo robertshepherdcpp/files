@@ -42,7 +42,8 @@ void func(std::string s, T t, Ts... ts) {
     std::cout << sub_str_v;
     std::cout << t;
     } else {
-        throw std::runtime_error("Entered variables but no /'{}/'.");
+        // throw std::runtime_error("Entered variables but no /'{}/'.");
+        std::cout << t;
     }
     auto w = s.substr(x + 2, s.size());
     func(w, ts...);
