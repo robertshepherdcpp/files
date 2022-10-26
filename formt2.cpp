@@ -136,6 +136,7 @@ void func(std::string s, T t) {
         substr_v2 = s.substr(i.second + 3, (s.size() - i.second)); // could be i.second + 2
     }
     std::cout << substr_v2;
+    std::cout << "\n";
     get_has_been_called = false;
 }
 int j = 0;
@@ -169,8 +170,17 @@ void func(std::string s, T t, Ts... ts)
 }
 } // formt
 
+struct Self
+{
+};
+
+auto func(Self& self)
+{
+
+}
+
 int main()
 {
-    formt::func("{}\n", 42);
-    formt::func("\nHello There {1} my freinds called {0}", "Sue", "Phil");
+    formt::func("{}\n", 4242);
+    formt::func("Hello There {1} my freinds called {0}", "Sue", "Phil");
 }
