@@ -1,6 +1,7 @@
 #include <iostream>  // std::cout
 #include <string>    // std::string
 #include <variant>   // std::variant
+#include <math.h>
 
 #define type auto
 #define not_equal_to !=
@@ -61,7 +62,7 @@ int main() {
         std::variant<int, double, float> v{5};
         auto l = std::get<int>(v);
         std::cout << "\n" << l << "\n";
-        v = 3.14159265358;
+        v = M_PI;
         auto y = std::get<double>(v);
         std::cout << y << "\n";
     }
@@ -69,9 +70,10 @@ int main() {
         str s = "xyz";
         str x = "yzx";
 
-        if (s is_equal_to x) {
+        /*if (s is_equal_to x) { always true.
             std::cout << "x: " << x << " Is equal to s: " << s << ".";
-        } else if (s != x) {
+        } else *///if (s != x) 
+        {
             std::cout << "x: " << x << " Is not equal to s: " << s << ".";
         }
     }
@@ -85,6 +87,6 @@ int main() {
         auto x = S + 10;
 
         std::cout << S + 10 + Y;
-        std::cout << make_s(true) + 5;
+        // std::cout << make_s(true) + 5;
     }
 }
