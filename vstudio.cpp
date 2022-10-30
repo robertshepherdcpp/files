@@ -12,6 +12,7 @@
 namespace errors
 {
 	struct const_error{};
+	struct generic_error {};
 }
 
 struct struct_string
