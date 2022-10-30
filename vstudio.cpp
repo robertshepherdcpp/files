@@ -3,11 +3,26 @@
 #include<string> // std::string, std::string_view
 #include<vector> // std::vector
 #include<utility> // std::pair
+#include<any> // std::any
+#include<optional> // std::optional
 
 // just seeing how long std::puts and std::cout take.
 // just carrying on from timur doumlers talk.
 
 // using std::literals::chrono_literals;
+
+/*
+* 
+ __      ___                 _    _____ _             _ _        
+ \ \    / (_)               | |  / ____| |           | (_)       
+  \ \  / / _ ___ _   _  __ _| | | (___ | |_ _   _  __| |_  ___   
+   \ \/ / | / __| | | |/ _` | |  \___ \| __| | | |/ _` | |/ _ \  
+    \  /  | \__ \ |_| | (_| | |  ____) | |_| |_| | (_| | | (_) | 
+     \/   |_|___/\__,_|\__,_|_| |_____/ \__|\__,_|\__,_|_|\___/  
+                                                                 
+                                                                 
+// https://patorjk.com/software/taag/#p=display&f=Big&t=Visual%20Studio%20
+*/
 
 namespace errors
 {
@@ -297,6 +312,15 @@ auto find_nodes(Tree2& t, T& LamToCall) -> bool// using CTAD
 //	return true;
 //}
 
+namespace std_cast // so the call to move is ambiguous.
+{
+	template<typename Arg>
+	auto move(Arg arg) // what move really is.
+	{
+		return static_cast<std::remove_reference<decltype(arg)>::type&&>(arg);
+	}
+}
+
 template<template<typename T> typename T_T>
 struct underlying_type
 {
@@ -347,6 +371,101 @@ struct Prime_int<2> {
 	}
 };
 
+namespace errors
+{
+	enum class error_types
+	{
+		Runtime_error = 1, Const_error, Parse_error, DataType_error, No_Error
+	};
+
+	auto output_appropriate_error(int i)
+	{
+		switch (i)
+		{
+		case 1:
+			std::cout << "Runtime_error.\n";         break;
+		case 2:
+			std::cout << "Const_error.\n";           break;
+		case 3:
+			std::cout << "Parse_error.\n";           break;
+		case 4:
+			std::cout << "DataType_error.\n";        break;
+		case 5:
+			std::cout << "No_Error.\n";              break;
+		default:
+			std::cout << "Invalid value entered.\n"; break;
+		}
+	}
+};
+
+template<typename T>
+struct ErrorOr
+{
+	ErrorOr()
+	{
+		variable;
+		current_type = false;
+	}
+
+	ErrorOr(T t)
+	{
+		variable = t;
+		current_type = false;
+	}
+
+	ErrorOr(decltype(errors::error_types::No_Error)& s)
+	{
+		Error = s;
+		current_type = true;
+	}
+
+	auto operator=(T t)
+	{
+		variable = t;
+		current_type = false;
+	}
+
+	auto operator=(decltype(errors::error_types::No_Error)& s)
+	{
+		Error = s;
+		current_type = true;
+	}
+
+	auto get_val(traits::true_type& s)
+	{
+		return Error;
+	}
+
+	auto get_val(traits::false_type& s)
+	{
+		return variable;
+	}
+
+	bool get()
+	{
+if (!current_type) // variable is active
+{
+	return true;
+}
+else
+{
+	return false;
+}
+	}
+
+	// false = variable, and true = Error
+	bool current_type = false;
+
+	decltype(errors::error_types::No_Error) Error = errors::error_types::No_Error;
+	T variable = T{};
+
+};
+
+ErrorOr<double> function()
+{
+	return {};
+}
+
 int main()
 {
 	auto start_puts = std::chrono::system_clock::now();
@@ -386,7 +505,7 @@ int main()
 
 	a A{};
 	b B{};
-	
+
 	bool is_an_a_b = is_an<decltype(A), decltype(B)>::value;
 	std::cout << std::boolalpha << "is_an<a, b>::value: " << is_an_a_b << "\n";
 
@@ -409,4 +528,29 @@ int main()
 	//s < decltype(b) > Y{};
 
 	//underlying_type<Y>::value x = 42;
+
+	// a blatent error:
+
+	auto v = 5 * '£';
+	std::cout << "5 * \'£\' / Pound Sign : is " << v << " or " << 5 * '£' << "\n";
+	// std::optional<decltype(errors::error_types::No_Error), double> v{};
+	auto error_or = function();
+	bool boolean_val = error_or.get();
+	if (boolean_val)
+	{
+		//error_or.get_val(traits::true_type{});
+		std::cout << "The error_or value is: " << int(error_or.Error) << " which is the error type.\n";
+		std::cout << "The error type was a ";
+		errors::output_appropriate_error(int(error_or.Error));
+		if (int(error_or.Error) == 5)
+		{
+		std::cout << "The error_or value is: " << error_or.variable << " which is the variable type\n";
+        }
+	}
+	else
+	{
+		//error_or.get_val(traits::false_type{});
+		std::cout << "The error_or value is: " << error_or.variable << " which is the variable type.\n";
+	}
+
 }
