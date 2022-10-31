@@ -27,8 +27,9 @@
 
 namespace errors
 {
-	struct const_error{};
-	struct generic_error {};
+	struct const_error { std::string error_str; };
+	struct generic_error { std::string error_str; };
+	struct string_parse { std::string error_str; };
 }
 
 struct struct_string
@@ -46,21 +47,6 @@ auto struct_string::operator=(const char* chars)
 struct simple_pod
 {
 	std::string str{};
-
-	//auto operator=(std::string& s)
-	//{
-	//	str = s;
-	//}
-
-	//simple_pod(std::string& s)
-	//{
-	//	str = s;
-	//}
-
-	//simple_pod()
-	//{
-	//	str = {};
-	//}
 };
 
 namespace math
@@ -127,7 +113,7 @@ struct overload : Ts...
 	// using Ts::()...;
 };
 
-// a kind of idea from ben deanes talk:
+// a kind of idea from ben deanes talk/ timur doumlers's talk at cppcon 2022
 
 
 template<typename X, typename Y>
@@ -148,6 +134,78 @@ auto find_leaf()
 	//	[&](Leaf& l) {return 1; }
 	//	[](Node* n) {return {n->left, n->right}; }
 	//}
+}
+
+auto assert(bool expression)
+{
+	if (!expression)
+	{
+		std::cout << "Assert Failed Calling \'std::abort()\' now.\n";
+		std::abort();
+	}
+	else
+	{
+
+	}
+}
+
+template<int index, typename type>
+auto get_first_n_of(auto& x)
+{
+	std::vector<type> v{};
+	for (int i = 0; i < x.size(); i++)
+	{
+			if (i != index)
+			{
+				v.push_back(x[i]);
+			}
+	}
+	type s{};
+	int index_two = 0;
+	for (auto i : v)
+	{
+		s[index_two] = i;
+		index_two++;
+	}
+	return s;
+}
+
+template<typename T>
+auto make_vector(T t)
+{
+	std::vector<T> vec = { t };
+	return vec;
+}
+
+template<typename T, typename... Ts>
+auto make_vector(T t, Ts... ts)
+{
+	std::vector<T> vec = { t, ts... };
+	return vec;
+}
+
+auto is_equal(auto& x, auto& y)
+{
+	if (x.size() != y.size())
+	{
+		return false;
+	}
+	for (int i = 0; i < x.size(); i++)
+	{
+		if (x[i] != y[i])
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+auto parser(std::string& str)
+{
+	if (str[0] == '/' && str[1] == '/' && str[2] == '/' && str[3] == '/')
+	{
+		std::cout << "It is looking promising!";
+	}
 }
 
 namespace traits
@@ -467,6 +525,29 @@ else
 
 };
 
+template<typename T>
+struct add_const
+{
+	using value_type = const T;
+};
+
+template<typename T>
+struct add_const<T const>
+{
+	using value_type = const T;
+};
+
+template<typename T>
+struct is_const : traits::false_type
+{
+};
+
+template<typename T>
+struct is_const<T const> : traits::true_type
+{
+};
+
+template<typename T>
 ErrorOr<double> function()
 {
 	return {};
@@ -559,7 +640,9 @@ int main()
 	auto v = 5 * '£';
 	std::cout << "5 * \'£\' / Pound Sign : is " << v << " or " << 5 * '£' << "\n";
 	// std::optional<decltype(errors::error_types::No_Error), double> v{};
-	auto error_or = function();
+	auto error_or_double = ErrorOr<double>{};
+	auto error_or = function<int>();
+	auto error_or_two = error_or_double;
 	bool boolean_val = error_or.get();
 	if (boolean_val)
 	{
@@ -586,10 +669,29 @@ int main()
 	std::cout << "invoke_t<func, s> invoke_result_two{}:\n";
 	std::cout << "\n";
 	std::cout << ".value\t=\t" << invoke_result_two.value;
-	std::cout << ".type\t=\t";
+	std::cout << "\n.type\t=\t";
 	// auto typeid_result_type = typename invoke_result_two.type{};
 	// std::cout << typeid(invoke_result_two.type);
+	std::cout << "\n";
+	std::string parse_str{ "///.parse.output" };
+	parser(parse_str);
+	
+	std::cout << "\n";
 
+	auto triple_invoke_lambda =
+		[]() {
+		return []()
+		{
+			return []() 
+			{
+				std::cout << "In a lambda.\n"; 
+			};
+		};
+	};
+
+	triple_invoke_lambda()()();
+
+	// playing with constexpr if/ if constexpr
 	std::cout << "\n\n";
 
 }
