@@ -5,6 +5,7 @@
 #include<utility> // std::pair
 #include<any> // std::any
 #include<optional> // std::optional
+#include<typeinfo> // typeid
 
 // just seeing how long std::puts and std::cout take.
 // just carrying on from timur doumlers talk.
@@ -103,6 +104,11 @@ struct half_const
 	half_const(T t)
 	{
 		data = t;
+	}
+
+	auto get_val()
+	{
+		return data;
 	}
 
 private:
@@ -443,10 +449,10 @@ struct ErrorOr
 
 	bool get()
 	{
-if (!current_type) // variable is active
-{
-	return true;
-}
+     if (!current_type) // variable is active
+    {
+	      return true;
+    }
 else
 {
 	return false;
@@ -464,6 +470,25 @@ else
 ErrorOr<double> function()
 {
 	return {};
+}
+
+template<auto Callable, auto Arg, auto... Args>
+struct invoke_t
+{
+	static const auto value = Callable(Arg, Args...);
+	using type = decltype(value);
+};
+
+template<auto Callable, auto Arg>
+struct invoke_t<Callable, Arg>
+{
+	static const auto value = Callable(Arg);
+	using type = decltype(Callable(Arg));
+};
+
+constexpr auto func(bool b)
+{
+	return b ? !b : b;
 }
 
 int main()
@@ -552,5 +577,19 @@ int main()
 		//error_or.get_val(traits::false_type{});
 		std::cout << "The error_or value is: " << error_or.variable << " which is the variable type.\n";
 	}
+
+	constexpr bool s = true;
+
+	// invoke_t < [&](bool b) {std::cout << "bool was:" << b; }, s > invoke_result{};
+	std::cout << "\n";
+	invoke_t<func, s> invoke_result_two{};
+	std::cout << "invoke_t<func, s> invoke_result_two{}:\n";
+	std::cout << "\n";
+	std::cout << ".value\t=\t" << invoke_result_two.value;
+	std::cout << ".type\t=\t";
+	// auto typeid_result_type = typename invoke_result_two.type{};
+	// std::cout << typeid(invoke_result_two.type);
+
+	std::cout << "\n\n";
 
 }
