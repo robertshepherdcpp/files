@@ -25,6 +25,17 @@
 // https://patorjk.com/software/taag/#p=display&f=Big&t=Visual%20Studio%20
 */
 
+using namespace std::string_literals;
+
+namespace universal
+{
+	struct True {};
+	struct False {};
+
+	True true_t{};
+	False false_t{};
+}
+
 namespace errors
 {
 	struct const_error { std::string error_str; };
@@ -572,6 +583,88 @@ constexpr auto func(bool b)
 	return b ? !b : b;
 }
 
+
+namespace OneTrueLib
+{
+	template<auto T>
+	auto get()
+		requires(T.Bool == true)
+	{
+		return T.first;
+	}
+
+	template<auto T>
+	auto get()
+		requires(T.Bool == false)
+	{
+		return T.second;
+	}
+
+	template<auto T>
+	auto get()
+	{
+		return T.first;
+	}
+}
+template<typename A, typename B>
+struct OneTrue
+{
+	A first;
+	B second;
+	bool Bool{};
+
+	OneTrue() : first{}, second{}
+	{
+		// by default use the first as the value.
+		Bool = true;
+	}
+
+	OneTrue(A t) : first{ t }, second{}, Bool{true}
+	{
+		// first is the type
+	}
+
+	OneTrue(B t) : first{}, second{ t }, Bool{false}
+	{
+		// second is the type
+	}
+
+	OneTrue(bool b) : Bool{ b } {}
+
+};
+
+// return type is a unvirsal::false_t or a unviral::true_t, but see below.
+// this function requires you to do: universal::get<__Return_Type__>(); which will give you the return type of the function.
+auto VERIFY(bool expression, std::string& expression_str) -> OneTrue<decltype(universal::false_t), decltype(universal::true_t)>
+{
+	std::cout << "Verifying the the expression " << expression_str << " is: " << expression;
+	if (!expression)
+	{
+		std::cout << "\nExpression Failed.\n";
+		return universal::false_t; // default constructs a OneTrue type because of trailing return type.
+	}
+	else
+	{
+		std::cout << "\nExpression Passed.\n";
+		return universal::true_t; // default constructs a OneTrue type because of trailing return type.
+	}
+}
+
+std::string empty_str = "";
+
+auto MUST(bool expression, std::string& expression_str = empty_str) -> void
+{
+	if (!expression)
+	{
+		std::cout << expression_str << " failed calling std::abort now.\n";
+		std::abort();
+	}
+	else
+	{
+		std::cout << empty_str << " passed.\n";
+	}
+}
+
 int main()
 {
 	auto start_puts = std::chrono::system_clock::now();
@@ -685,13 +778,25 @@ int main()
 			return []() 
 			{
 				std::cout << "In a lambda.\n"; 
+				return 42;
 			};
 		};
 	};
 
-	triple_invoke_lambda()()();
+	auto fortytwo = triple_invoke_lambda()()();
 
 	// playing with constexpr if/ if constexpr
-	std::cout << "\n\n";
+	std::string str_x = "fortytwo == 42;";
+	std::string str_x_ = "fortytwo != 42;";
+	std::cout << "\nThe value of \'fortytwo\' is: " << fortytwo << "\n";
+	std::cout << "\n";
+	auto one_true = VERIFY(fortytwo == 42, str_x); // notice the std::string_literals::s
+	std::cout << "\n";
+	auto none_true = VERIFY(fortytwo != 42, str_x_);
+	// auto one_true_t = OneTrueLib::get<one_true>();
+	// results in an error.
+	std::cout << "\n";
+	MUST(fortytwo == 42, str_x);
 
+	std::cout << "\n\n";
 }
