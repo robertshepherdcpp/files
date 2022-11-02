@@ -284,7 +284,7 @@ namespace make
 	template<typename T, typename... Args>
 	auto make_unique(T t, Args... args)
 	{
-		return unique_pointer<T>(new T(std::forward<Args>(Args...) ...));
+		return unique_pointer<T>(new T(std::forward<Args>(args...) ...));
 	}
 }
 
