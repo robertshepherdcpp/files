@@ -275,6 +275,7 @@ struct b
 	char c = 'C';
 };
 
+// forward declaration
 template<typename T>
 struct unique_pointer;
 
@@ -516,6 +517,11 @@ struct ErrorOr
 		return variable;
 	}
 
+	auto is_error()
+	{
+		return current_type;
+	}
+
 	bool get()
 	{
      if (!current_type) // variable is active
@@ -650,6 +656,41 @@ auto VERIFY(bool expression, std::string& expression_str) -> OneTrue<decltype(un
 	}
 }
 
+template<typename T>
+struct DataMember
+{
+	auto operator=(T t)
+	{
+		__Data = t;
+	}
+
+	DataMember(T t)
+	{
+		__Data = t;
+	}
+
+	auto clear()
+	{
+		__Data = ~T();
+	}
+
+	T __Data{};
+};
+
+struct my_container
+{
+	my_container() {}
+	my_container(int i) { d_m_i = i; }
+
+	auto and_then(auto LambdaExpression)
+	{
+		LambdaExpression(d_m_i);
+		return *this;
+	}
+
+	DataMember<int> d_m_i = 42;
+};
+
 std::string empty_str = "";
 
 auto MUST(bool expression, std::string& expression_str = empty_str) -> void
@@ -664,6 +705,31 @@ auto MUST(bool expression, std::string& expression_str = empty_str) -> void
 		std::cout << empty_str << " passed.\n";
 	}
 }
+
+// returns true if all are true and false if one is not true.
+template<typename... Args>
+bool all(Args... args)
+{
+	return (... and args);
+}
+
+template<auto t, auto... ts>
+struct all_
+{
+	static constexpr bool value = bool(t);
+	static constexpr bool values = all_<ts...>::value;
+
+	auto is() -> bool
+	{
+		return value && values;
+	}
+};
+
+template<auto t>
+struct all_<t>
+{
+	static constexpr bool value = t;
+};
 
 int main()
 {
@@ -797,6 +863,41 @@ int main()
 	// results in an error.
 	std::cout << "\n";
 	MUST(fortytwo == 42, str_x);
+	int i_index = 0;
+	std::cout << "Graphical ASCII: \n\n";
+	for (auto code_point = 0x21; code_point <= 0x7E; code_point++)
+	{
+		if (i_index == 50)
+		{
+			std::cout << "\n";
+			i_index = 0;
+		}
+		i_index += 5;
+		std::cout << '(' << static_cast<char>(code_point) << ')' << ", ";
+	}
+	std::cout << "\n";
+
+	my_container m_cont = 42;
+	auto FirstLambda = [](auto& x) {x.__Data *= x.__Data; };
+	auto SecondLambda = [](auto&& x) {x.__Data += 6; };
+
+	std::cout << "\n";
+	//     return *this / m_cont || return *this / m_cont.
+	m_cont.and_then(FirstLambda).and_then(SecondLambda);
+	std::cout << "m_cont.and_then(FirstLambda).and_then(SecondLambda):\n"
+		<< "m_cont.d_m_i.__Data: " << m_cont.d_m_i.__Data << ".\n.";
+
+	std::cout << "\nall(true, 5.6, 0, 9, 3.14159265358979323, 'c', false): ";
+	std::cout << all(true, 5.6, 0, 9, 3.14159265358979323, 'c', false);
+
+	std::cout << "\nall(5.2, true, 7, 9, 8.4, 0); : ";
+	std::cout << all(5.2, true, 7, 9, 8.4, 0);
+
+	all_<true, 5.2, 6, 9> a{};
+	std::cout << "\n\nall_<true, 5.2, 6, 9> " << a.is();
+
+	all_<true, 4, 42, false, 7> b{};
+	std::cout << "\n\nall_<true, 4, 42, false, 7> " << b.is();
 
 	std::cout << "\n\n";
 }
