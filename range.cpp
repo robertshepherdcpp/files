@@ -1,6 +1,12 @@
 #include<iostream> // std::cout
 #include<cstddef> // std::size_t
 
+template<typename T>
+struct memory_buffer
+{
+    T memory[42];
+};
+
 struct VoidType
 {
     // no implemenatation, doesnt need one
