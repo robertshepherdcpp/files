@@ -32,10 +32,12 @@ auto getIndexShow(int x, std::vector<int>& doors) -> int {
 
 int main() {
     int switchWins = 0;
+    int switchNonWins = 0;
     int nonSwitchWins = 0;
+    int nonSwitchNonWins = 0;
     int totalRounds = 0;
 
-    for (int i = 0; i < 100000; i++) {
+    for (int i = 0; i < 10'000; i++) {
         // first make the three doors, initialize them all to goats at first but
         // then get a random pos of goat.
         std::vector<int> doors{0, 0, 0};
@@ -68,10 +70,20 @@ int main() {
         } else if (!should_switch && win) {
             nonSwitchWins++;
         }
+        else if(!should_switch && !win) {
+            nonSwitchNonWins++;
+        }
+        else if(should_switch && !win) {
+            switchNonWins++;
+        }
         totalRounds++;
     }
 
     
-    std::cout << double(switchWins) / totalRounds * 100 << '\n';
-    std::cout << double(nonSwitchWins) / totalRounds * 100 << '\n';
+    std::cout << "Switch Wins:         " << double(switchWins) / totalRounds * 100 << "%" << '\n';
+    std::cout << "Non Switch Wins:     " << double(nonSwitchWins) / totalRounds * 100 << "%" << "\n\n";
+    std::cout << "Switch Non Wins:     " << double(switchNonWins) / totalRounds * 100 << "%" << '\n';
+    std::cout << "Non Switch Non Wins: " << double(nonSwitchNonWins) / totalRounds * 100 << "%" << '\n';
+
+    std::cout << '\n' << (double(switchWins) / totalRounds * 100) + (double(nonSwitchWins) / totalRounds * 100) + (double(switchNonWins) / totalRounds * 100) + (double(nonSwitchNonWins) / totalRounds * 100) << "%" ;
 }
