@@ -1,0 +1,41 @@
+#include <iostream>
+#include <vector>
+#include <ranges>
+
+std::vector<std::vector<int>> generate(int numRows) {
+    std::vector<std::vector<int>> rows{};
+    for (int i = 1; i < numRows + 1; i++) {
+        rows.push_back(std::vector<int>(i, 1));
+    }
+    // now we have go to go through
+    for (int j = 2; j < numRows; j++) {
+        for (int i = 1; i < rows[j].size() - 1; i++) {
+            rows[j][i] = rows[j - 1][i - 1] + rows[j - 1][i];
+        }
+    }
+    return rows;
+}
+
+auto print_spaces(int count)
+{
+    // for(int i = 0; i < count; i++)
+    // {
+    //     std::cout << 
+    // }
+    std::string s(count, ' ');
+    std::cout << s;
+}
+
+int main()
+{
+    std::vector<std::vector<int>> pascalTriangle = generate(5);
+    for(int i = 0; i < pascalTriangle.size(); i++)
+    {
+        print_spaces((pascalTriangle.size() - i - 1));
+        for(int j : pascalTriangle[i])
+        {
+            std::cout << " " << j;
+        }
+        std::cout << "\n";
+    }
+}
