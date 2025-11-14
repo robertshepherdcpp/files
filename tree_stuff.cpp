@@ -102,3 +102,5 @@ root = node_6
 print_tree(root)
    
 main()
+
+# https://godbolt.org/z/q74sv6fEf
