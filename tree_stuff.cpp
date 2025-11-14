@@ -1,4 +1,3 @@
-// warning does not work
 class Node:
     def __init__(self, val_=0):
         self.val = val_
@@ -31,12 +30,12 @@ def print_tree(root):
         min_width = min(min_width, curr[2])
 
         if curr[0].left:
-            stack.append([curr[0].left, curr[1]+1, curr[1]-1])
-            const_stack.append([curr[0].left, curr[1]+1, curr[1]-1])
+            stack.append([curr[0].left, curr[1]+1, curr[2]-1])
+            const_stack.append([curr[0].left, curr[1]+1, curr[2]-1])
 
         if curr[0].right:
-            stack.append([curr[0].right, curr[1]+1, curr[1]+1])
-            const_stack.append([curr[0].right, curr[1]+1, curr[1]+1])
+            stack.append([curr[0].right, curr[1]+1, curr[2]+1])
+            const_stack.append([curr[0].right, curr[1]+1, curr[2]+1])
     # weve got the max depth and max width
     print(f"breadth first search finished: {0}", const_stack)
     width = abs(min_width) + max_width
@@ -47,17 +46,22 @@ def print_tree(root):
     gap = depth
     #arr = [["" /* * 2*width+1*/] for _ in range(depth+1)]
     arr = [[] for _ in range(depth+1)]
+    prev = const_stack[0][1]+1
     for i in const_stack:
-        arr[i[1]].append(" " * gap)
+        # arr[i[1]].append(" " * gap)
+        # arr[i[1]].append(str(i[0].val))
+        arr[i[1]].append(" " * (i[2] - min_width))
         arr[i[1]].append(str(i[0].val))
-        gap -= 1
+        if i[1] < prev:
+            gap -= 1
+            prev = i[1]
     print(f"array appending stuff finished, {0}.", arr)
     # now weve got the array and now we need to print it
     for i in arr:
-        print("outer loop")
-        for j in i:
-            print("inner loop")
-            print(j)
+        #print("outer loop")
+        #for j in i:
+        #print("inner loop")
+        print(''.join(i))
     print("function finished.")
 
 def main():
@@ -102,5 +106,3 @@ root = node_6
 print_tree(root)
    
 main()
-
-# https://godbolt.org/z/q74sv6fEf
