@@ -15,7 +15,7 @@ int main() {
         if (random(5) ==
             1) {  // 20 percent change of getting a parenthesis part
             // then we use a paren
-            res += "(";
+            res += " (";
             paren_count += 1;
         }
         int a = random(10);
