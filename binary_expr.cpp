@@ -1,22 +1,19 @@
 // a program to generate a random sequence of arithmetic operations
-#include<iostream>
-#include<vector>
-#include<string>
-#include<cstdlib>
+#include <cstdlib>
+#include <iostream>
+#include <string>
+#include <vector>
 
-auto random(int range) {
-    return rand() % range;
-}
+auto random(int range) { return rand() % range; }
 
-const std::vector<std::string> v {
-    " + ", " - ", " / ", " * "
-};
+const std::vector<std::string> v{" + ", " - ", " / ", " * "};
 
 int main() {
     std::string res;
     int paren_count = 0;
-    while(res.size() < 100) {
-        if(random(5) == 1) {
+    while (res.size() < 100) {
+        if (random(5) ==
+            1) {  // 20 percent change of getting a parenthesis part
             // then we use a paren
             res += "(";
             paren_count += 1;
@@ -26,33 +23,32 @@ int main() {
         int idx = random(v.size());
         res += v[idx];
         int b = random(10);
-        if(random(5) == 1) {
+        if (random(5) ==
+            1) {  // 20 percent change of having another parenthesis
             // then we use a paren
             res += "(";
             paren_count += 1;
             res += std::to_string(b);
-        }
-        else {
+        } else {
             res += std::to_string(b);
-            if(paren_count > 0) {
-                if(random(5) == 1) {
-            // then we use a paren
-            res += ") ";
-            paren_count -= 1;
-        }
+            if (paren_count > 0) {
+                if (random(5) ==
+                    1) {  // 20 percent chance of closing the parentheses.
+                    // then we use a paren
+                    res += ") ";
+                    paren_count -= 1;
+                }
             }
         }
-
-
     }
-    char c = res[res.size()-2];
+    char c = res[res.size() - 2];
     bool seen = false;
-    for(int i = 0; i < v.size(); i++) {
-        if(v[i][1] == c) {
+    for (int i = 0; i < v.size(); i++) {
+        if (v[i][1] == c) {
             res += std::to_string(random(10));
         }
     }
-    for(int i = 0; i < paren_count; i++) {
+    for (int i = 0; i < paren_count; i++) {
         res += ")";
     }
     std::cout << res << "\n";
